@@ -37,6 +37,10 @@ const WHITELISTED_DOMAINS = [
   'https://stackoverflow.com',
 ];
 
+const INTRO_MESSAGE = `Try sending me one of these messages:
+text, image, video, reuse, bubble,
+"quick replies", compact, tall, full`;
+
 function init_bot() {
   messenger.addWhitelistedDomains(WHITELISTED_DOMAINS);
 
@@ -162,7 +166,7 @@ messenger.on('message', (message) => {
               }),
             ],
           }),
-        ]
+        ],
       ));
     }
 
@@ -172,7 +176,7 @@ messenger.on('message', (message) => {
       const qrs = new QuickReplies([qr1, qr2]);
       messenger.send(Object.assign(
         { text: 'This is an example with quick replies.' },
-        qrs
+        qrs,
       ));
     }
 
@@ -254,8 +258,7 @@ messenger.on('postback', (message) => {
         console.log(res);
       });
   } else if (payload === 'start') {
-    const text = 'Try sending me one of these messages: text, image, video, reuse, bubble, "quick replies", compact, tall, full';
-    messenger.send({ text });
+    messenger.send({ INTRO_MESSAGE });
   }
 });
 
