@@ -1,12 +1,12 @@
 import sinon from 'sinon';
 import { expect } from 'chai';
-import fetchMock from 'fetch-mock';
 
 import { Messenger } from '../lib/Messenger';
 
 const messenger = new Messenger({
   pageAccessToken: 'page_access_token',
 });
+
 messenger.lastMessage = {
   sender: {
     id: 'USER_ID',
@@ -15,7 +15,6 @@ messenger.lastMessage = {
     id: 'PAGE_ID',
   },
 };
-
 
 function generatePayload(key, payload) {
   const res = {
@@ -45,9 +44,7 @@ function generatePayload(key, payload) {
 describe('Messenger', () => {
   describe('new', () => {
     describe('with all attributes', () => {
-      it('initializes correctly', () => {
-        expect(messenger).to.be.ok;
-      });
+      it('initializes correctly', () => expect(messenger).to.be.ok);
     });
 
     describe('with an attribute missing', () => {
@@ -143,10 +140,16 @@ describe('Messenger', () => {
   });
 
   describe('get user', () => {
+    const mockGetUser = sinon.spy(messenger.client, 'getUser');
     it('calls get user', () => {
-      const mockGetUser = sinon.spy(messenger.client, 'getUser');
       messenger.getUser();
       expect(mockGetUser.callCount).to.equal(1);
+    });
+
+    it('calls get user with an ID', () => {
+      messenger.getUser(123);
+      expect(mockGetUser.callCount).to.equal(2);
+      expect(mockGetUser.calledWith(123)).to.equal(true);
     });
   });
 
@@ -187,10 +190,18 @@ describe('Messenger', () => {
   });
 
   describe('sender actions', () => {
+    const mock = sinon.spy(messenger.client, 'senderAction');
+
     it('calls correct method', () => {
-      const mock = sinon.spy(messenger.client, 'senderAction');
       messenger.senderAction('typing_on');
       expect(mock.callCount).to.equal(1);
+      expect(mock.calledWith('typing_on')).to.be.true;
+    });
+
+    it('accepts an id', () => {
+      messenger.senderAction('typing_on', 1234);
+      expect(mock.callCount).to.equal(2);
+      expect(mock.calledWith('typing_on', 1234)).to.be.true;
     });
   });
 
